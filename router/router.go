@@ -1,17 +1,31 @@
 package router
 
 import(
-	"fmt"
-    "html"
     "net/http"
+    "fmt"
     "github.com/gorilla/mux"
 )
 
-func route(w http.ResponseWriter, r *http.Request) {
-	
+type authenticator interface {
+	Authenticate(string) error
 }
 
-func Init() {
+var auth authenticator 
+
+func route(w http.ResponseWriter, r *http.Request) {
+	session := r.Header.Get("x-session-id")
+	err := auth.Authenticate(session)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func Init(authClient authenticator) {
+	
 	router := mux.NewRouter();
-	router.HandleFunc("/", Index)
+	router.HandleFunc("/", route)
+	auth = authClient
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		panic(err)
+	}
 }
