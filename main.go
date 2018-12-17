@@ -1,11 +1,10 @@
 package main
 
-import(
+import (
 	"stroom/router"
-	"stroom/auth"
 )
 
 func main() {
-	client := new(auth.AuthenticateClient)
-	router.Init(client)
+	// client := new(auth.AuthenticateClient)
+	router.Init()
 }
