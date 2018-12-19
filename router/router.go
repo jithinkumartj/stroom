@@ -3,9 +3,10 @@ package router
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"stroom/auth"
+
+	log "github.com/Sirupsen/logrus"
 
 	"github.com/gorilla/mux"
 )
@@ -24,17 +25,14 @@ func AuthenticationMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func Init() {
+func Init() *mux.Router {
 
 	router := mux.NewRouter()
 	router.HandleFunc("/login", login).Methods("POST")
 	router.HandleFunc("/logout", logout).Methods("GET")
 	router.Handle("/closed_endpoint", AuthenticationMiddleware(http.HandlerFunc(closed_endpoint)))
 	router.HandleFunc("/open_endpoint", open_endpoint)
-	http.Handle("/", router)
-	if err := http.ListenAndServe(":8080", nil); err != nil {
-		panic(err)
-	}
+	return router
 }
 
 var users = map[string]string{
